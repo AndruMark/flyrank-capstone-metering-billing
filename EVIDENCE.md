@@ -28,7 +28,7 @@ tests/test_phase3.py::test_subscription_cancellation_downgrades_to_free PASSED  
 A. Metering & Idempotency
 [x] A billable action creates exactly one usage event under retries (Idempotency-Key).
 
-[x] Proof in EVIDENCE.md that double-counting cannot happen:
+[x] Proof that double-counting cannot happen:
 
 Verification Test: test_probe_1_idempotent_metering
 
@@ -41,12 +41,14 @@ B. Quotas & Boundaries
 
 [x] Responses carry the correct status codes (429/402) and an explanatory message:
 
-Verification Test: test_probe_2_quota_boundary_enforcement & test_probe_2_payment_required_on_past_due
+Verification Tests: test_probe_2_quota_boundary_enforcement & test_probe_2_payment_required_on_past_due
 
-Evidence (Boundary Call 1,000/1,000):
+Evidence (Boundary Call 1,000/1,000 — Allowed):
 
-JSON
+HTTP
 HTTP/1.1 201 Created
+Content-Type: application/json
+
 {
   "status": "success",
   "tenant_id": "tenant_free_boundary",
@@ -55,9 +57,11 @@ HTTP/1.1 201 Created
 }
 Evidence (Call 1,001/1,000 -> HTTP 429 Too Many Requests):
 
-JSON
+HTTP
 HTTP/1.1 429 Too Many Requests
+Content-Type: application/json
 Retry-After: 86400
+
 {
   "error": "Monthly API calls quota exceeded (1000/1000).",
   "details": {
@@ -71,8 +75,10 @@ Retry-After: 86400
 }
 Evidence (Past Due Tenant -> HTTP 402 Payment Required):
 
-JSON
+HTTP
 HTTP/1.1 402 Payment Required
+Content-Type: application/json
+
 {
   "error": "Subscription payment required to continue service.",
   "details": {
