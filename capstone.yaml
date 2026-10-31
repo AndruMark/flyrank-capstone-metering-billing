@@ -1,0 +1,11 @@
+﻿run: "uvicorn src.main:app --host 0.0.0.0 --port 8000"
+seed: "python -m src.core.seeder"
+test: "pytest"
+base_url: "http://localhost:8000"
+endpoints:
+  health: "GET /health"
+  meter: "POST /api/v1/meter"
+  generate_dummy: "POST /api/v1/generate"
+  usage_rollup: "GET /api/v1/usage/{tenant_id}"
+  stripe_checkout: "POST /api/v1/billing/checkout"
+  stripe_webhook: "POST /api/v1/webhooks/stripe"
