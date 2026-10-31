@@ -27,3 +27,8 @@ class UsageRollupResponse(BaseModel):
     api_calls: Dict[str, Any]
     ai_tokens: Dict[str, Any]
     total_cost_usd: str
+
+class CheckoutRequest(BaseModel):
+    tenant_id: str = Field(..., min_length=1)
+    success_url: str = Field(default="http://localhost:8000/billing/success?session_id={CHECKOUT_SESSION_ID}")
+    cancel_url: str = Field(default="http://localhost:8000/billing/cancel")

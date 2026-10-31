@@ -55,7 +55,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS usage_events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tenant_id TEXT NOT NULL REFERENCES tenants(id),
-            event_type TEXT NOT NULL, -- 'api_call' or 'ai_tokens'
+            event_type TEXT NOT NULL,
             quantity INTEGER NOT NULL,
             input_tokens INTEGER DEFAULT 0,
             cached_input_tokens INTEGER DEFAULT 0,
@@ -80,7 +80,16 @@ def init_db():
         );
         """)
         
-        # Indexes for fast monthly rollups
+        # 5. Processed Stripe Webhook Events (Deduplication Layer)
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS processed_stripe_events (
+            event_id TEXT PRIMARY KEY,
+            event_type TEXT NOT NULL,
+            processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """)
+        
+        # Indexes for fast rollups and event lookups
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_usage_tenant_date ON usage_events(tenant_id, created_at);")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_usage_idem ON usage_events(tenant_id, idempotency_key);")
         
@@ -94,4 +103,4 @@ def init_db():
 
 if __name__ == "__main__":
     init_db()
-    print("Database initialized successfully.")
+    print("Database schema updated with Stripe event deduplication table.")
