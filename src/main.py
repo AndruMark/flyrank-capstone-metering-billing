@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from src.core.config import settings
 from src.core.database import init_db
 from src.api.routes.billing import router as billing_router
+from src.api.routes.stripe_routes import router as stripe_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,6 +18,7 @@ app = FastAPI(
 )
 
 app.include_router(billing_router)
+app.include_router(stripe_router)
 
 @app.get("/health", tags=["System"])
 def health_check():
